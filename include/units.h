@@ -43,6 +43,9 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable: 4003)
+
 #ifndef units_h__
 #define units_h__
 
@@ -59,6 +62,19 @@
 #		define noexcept throw()
 #	endif // _MSC_VER < 1800
 #endif // _MSC_VER
+
+// Because microsoft doesn't care about namespace pollution
+#ifdef min
+#    define MAX_WAS_FORMERLY_DEFINED
+#    pragma push_macro("min")
+#    undef min
+#endif
+
+#ifdef max
+#    define MIN_WAS_FORMERLY_DEFINED
+#    pragma push_macro("max")
+#    undef max
+#endif
 
 #if !defined(_MSC_VER) || _MSC_VER > 1800
 #   define UNIT_HAS_LITERAL_SUPPORT
@@ -3970,6 +3986,7 @@ namespace units
 	UNIT_ADD(area, square_kilometer, square_kilometers, sq_km, squared<length::kilometers>)
 	UNIT_ADD(area, hectare, hectares, ha, unit<std::ratio<10000>, square_meters>)
 	UNIT_ADD(area, acre, acres, acre, unit<std::ratio<43560>, square_feet>)
+    UNIT_ADD(area, square_micrometer, square_micrometers, sq_um, squared<length::micrometers>)
 	
 	UNIT_ADD_CATEGORY_TRAIT(area)
 #endif
@@ -4160,6 +4177,7 @@ namespace units
 	 */
 	namespace math
 	{
+
 
 		//----------------------------------
 		//	MIN/MAX FUNCTIONS
@@ -4821,6 +4839,22 @@ namespace std
 	};
 }
 
+// Since the min and max macros are defined outside this library
+// MSVC cannot find the matching macro push since is inside of an
+// ifdef
+#pragma warning(push)
+#pragma warning(disable: 4602)
+#ifdef MAX_WAS_FORMERLY_DEFINED
+#    pragma pop_macro("max")
+#    undef MAX_WAS_FORMERLY_DEFINED
+#endif
+
+#ifdef MIN_WAS_FORMERLY_DEFINED
+#    pragma pop_macro("min")
+#    undef MIN_WAS_FORMERLY_DEFINED
+#endif
+#pragma warning(pop)
+
 #ifdef _MSC_VER
 #	if _MSC_VER <= 1800
 #		pragma warning(pop)
@@ -4833,8 +4867,13 @@ namespace std
 #	pragma pop_macro("pascal")
 #endif // _MSC_VER
 
+
+
 #endif // units_h__
 
+
+
+#pragma warning(pop)
 // For Emacs
 // Local Variables:
 // Mode: C++
