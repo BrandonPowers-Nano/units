@@ -4836,6 +4836,10 @@ namespace std
 		{
 			return units::unit_t<Units, T, NonLinearScale>(std::numeric_limits<T>::lowest());
 		}
+		static constexpr units::unit_t<Units, T, NonLinearScale> quiet_NaN()
+		{
+			return units::unit_t<Units, T, NonLinearScale>(std::numeric_limits<T>::quiet_NaN());
+		}
 	};
 }
 
